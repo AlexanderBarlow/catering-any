@@ -17,6 +17,7 @@ import { BlurView } from "expo-blur";
 import { CFA } from "../../constants/theme";
 import { api } from "../../src/api";
 import { useSession } from "../../hooks/useSession";
+import { LiquidButton } from "@/components/LiquidButton";
 
 function GlassCard({ children }: { children: React.ReactNode }) {
   return (
@@ -297,37 +298,13 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
-            <Pressable
+            <LiquidButton
+              title={loading ? "Signing in…" : "Sign In"}
+              icon="log-in"
               onPress={onLogin}
               disabled={!canSubmit}
-              style={{
-                marginTop: 16,
-                backgroundColor: CFA.red,
-                paddingVertical: 14,
-                borderRadius: 18,
-                alignItems: "center",
-                opacity: canSubmit ? 1 : 0.65,
-                flexDirection: "row",
-                justifyContent: "center",
-                gap: 10,
-              }}
-            >
-              {loading ? (
-                <>
-                  <ActivityIndicator color="#fff" />
-                  <Text style={{ color: "#fff", fontWeight: "900" }}>
-                    Signing in…
-                  </Text>
-                </>
-              ) : (
-                <>
-                  <Ionicons name="log-in" size={18} color="#fff" />
-                  <Text style={{ color: "#fff", fontWeight: "900" }}>
-                    Sign In
-                  </Text>
-                </>
-              )}
-            </Pressable>
+              containerStyle={{ marginTop: 14 }}
+            />
 
             <Text style={{ marginTop: 12, color: CFA.muted, fontSize: 12 }}>
               Tip: use an email containing{" "}

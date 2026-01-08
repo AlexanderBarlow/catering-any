@@ -15,6 +15,7 @@ import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 import { CFA } from "../../constants/theme";
 import { useSession } from "../../hooks/useSession";
+import { haptic } from "@/src/utils/haptics";
 
 function iconForRoute(routeName: string, focused: boolean) {
   switch (routeName) {
@@ -133,7 +134,7 @@ function IOS26TabBar(props: BottomTabBarProps & { isAdmin: boolean }) {
             }}
           />
 
-          {/* ✅ Sliding active pill (now perfectly aligned with padded row) */}
+          {/* Sliding active pill */}
           {barWidth > 0 && slotW > 0 ? (
             <Animated.View
               pointerEvents="none"
@@ -175,13 +176,13 @@ function IOS26TabBar(props: BottomTabBarProps & { isAdmin: boolean }) {
             </Animated.View>
           ) : null}
 
-          {/* Tab buttons (padding matches H_PAD) */}
+          {/* Tab buttons */}
           <View
             style={{
               flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              paddingHorizontal: H_PAD, // ✅ matches math
+              paddingHorizontal: H_PAD,
               paddingVertical: 8,
             }}
           >
@@ -201,12 +202,17 @@ function IOS26TabBar(props: BottomTabBarProps & { isAdmin: boolean }) {
                   target: route.key,
                   canPreventDefault: true,
                 });
+
+                // HAPTIC: only when actually switching tabs
                 if (!isFocused && !event.defaultPrevented) {
+                  haptic.selection();
                   navigation.navigate(route.name as never);
                 }
               };
 
               const onLongPress = () => {
+                // HAPTIC: subtle long-press feedback
+                haptic.light();
                 navigation.emit({ type: "tabLongPress", target: route.key });
               };
 
@@ -216,7 +222,7 @@ function IOS26TabBar(props: BottomTabBarProps & { isAdmin: boolean }) {
                   onPress={onPress}
                   onLongPress={onLongPress}
                   style={{
-                    width: slotW, // ✅ each button gets the exact same slot width
+                    width: slotW,
                     height: 62,
                     borderRadius: 28,
                     alignItems: "center",
