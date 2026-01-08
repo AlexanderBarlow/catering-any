@@ -15,6 +15,8 @@ import {
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { CFA } from "../../constants/theme";
+import TabScreenTransition from "../../components/TabScreenTransition";
+
 
 type Category = "Entree" | "Side" | "Drink" | "Dessert" | "Sauce" | "Other";
 
@@ -363,294 +365,596 @@ export default function ItemsPage() {
     ]);
   }
 
-  return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: CFA.cream }}
-      edges={["top", "left", "right"]}
-    >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 12,
-          paddingBottom: bottomPadForNav,
-          paddingLeft: sidePad,
-          paddingRight: sidePad,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 12,
-          }}
+    return (
+      <TabScreenTransition>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: CFA.cream }}
+          edges={["top", "left", "right"]}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}>
-              Items
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 4 }}>
-              Price + cost per item for margin + sales stats
-            </Text>
-          </View>
-
-          <Pressable
-            onPress={openAdd}
-            style={{
-              paddingVertical: 10,
-              paddingHorizontal: 12,
-              borderRadius: 16,
-              backgroundColor: CFA.red,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
+          <ScrollView
+            contentContainerStyle={{
+              paddingTop: 12,
+              paddingBottom: bottomPadForNav,
+              paddingLeft: sidePad,
+              paddingRight: sidePad,
             }}
+            showsVerticalScrollIndicator={false}
           >
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}>
-              Add Item
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Summary */}
-        <Card style={{ marginTop: 14 }}>
-          <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-            Period Summary
-          </Text>
-
-          <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Revenue
-              </Text>
-              <Text
-                style={{
-                  color: CFA.ink,
-                  fontWeight: "900",
-                  fontSize: 20,
-                  marginTop: 6,
-                }}
-              >
-                ${summary.revenue.toFixed(0)}
-              </Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Cost
-              </Text>
-              <Text
-                style={{
-                  color: CFA.ink,
-                  fontWeight: "900",
-                  fontSize: 20,
-                  marginTop: 6,
-                }}
-              >
-                ${summary.cost.toFixed(0)}
-              </Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Profit
-              </Text>
-              <Text
-                style={{
-                  color: summary.profit >= 0 ? CFA.success : CFA.danger,
-                  fontWeight: "900",
-                  fontSize: 20,
-                  marginTop: 6,
-                }}
-              >
-                ${summary.profit.toFixed(0)}
-              </Text>
-              <Text
-                style={{
-                  color: CFA.muted,
-                  marginTop: 4,
-                  fontSize: 12,
-                  fontWeight: "800",
-                }}
-              >
-                {summary.avgMargin.toFixed(1)}% margin
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        {/* Search + filters */}
-        <Card style={{ marginTop: 14 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              borderRadius: 16,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              backgroundColor: "rgba(11,18,32,0.02)",
-            }}
-          >
-            <Ionicons name="search" size={18} color={CFA.muted} />
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Search items…"
-              placeholderTextColor="rgba(11,18,32,0.40)"
-              autoCapitalize="none"
-              autoCorrect={false}
+            {/* Header */}
+            <View
               style={{
-                flex: 1,
-                color: CFA.ink,
-                fontWeight: "800",
-              }}
-            />
-            {query ? (
-              <Pressable onPress={() => setQuery("")} hitSlop={10}>
-                <Ionicons name="close-circle" size={18} color={CFA.muted} />
-              </Pressable>
-            ) : null}
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 10,
-              marginTop: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            {CATS.map((c) => (
-              <Chip
-                key={c}
-                text={c}
-                active={cat === c}
-                onPress={() => setCat(c as any)}
-              />
-            ))}
-
-            <Pressable
-              onPress={() => setOnlyActive((v) => !v)}
-              style={{
-                marginLeft: "auto",
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: 999,
-                borderWidth: 1,
-                borderColor: onlyActive ? "rgba(77,123,74,0.30)" : CFA.border,
-                backgroundColor: onlyActive
-                  ? "rgba(77,123,74,0.12)"
-                  : "transparent",
                 flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 12,
               }}
             >
-              <Ionicons
-                name={onlyActive ? "checkmark-circle" : "ellipse-outline"}
-                size={16}
-                color={onlyActive ? CFA.success : CFA.muted}
-              />
-              <Text
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}
+                >
+                  Items
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 4 }}>
+                  Price + cost per item for margin + sales stats
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={openAdd}
                 style={{
-                  color: onlyActive ? CFA.success : CFA.muted,
-                  fontWeight: "900",
-                  fontSize: 12,
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderRadius: 16,
+                  backgroundColor: CFA.red,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
                 }}
               >
-                Active only
-              </Text>
-            </Pressable>
-          </View>
-        </Card>
-
-        {/* List */}
-        <Card style={{ marginTop: 14 }}>
-          <Text style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}>
-            Items ({filtered.length})
-          </Text>
-
-          {filtered.length === 0 ? (
-            <View style={{ paddingVertical: 22, alignItems: "center" }}>
-              <Ionicons name="fast-food-outline" size={26} color={CFA.muted} />
-              <Text
-                style={{ color: CFA.muted, marginTop: 8, fontWeight: "800" }}
-              >
-                No items match your filters.
-              </Text>
-            </View>
-          ) : (
-            filtered.map((it, idx) => {
-              const rev = it.price * it.qtySoldPeriod;
-              const profit = (it.price - it.cost) * it.qtySoldPeriod;
-              const mp = marginPct(it.price, it.cost);
-              const mpColor =
-                mp >= 45 ? CFA.success : mp >= 25 ? CFA.warn : CFA.danger;
-
-              return (
-                <Pressable
-                  key={it.id}
-                  onPress={() => openEdit(it)}
-                  style={{
-                    paddingVertical: 12,
-                    borderTopWidth: idx === 0 ? 0 : 1,
-                    borderTopColor: CFA.border,
-                  }}
+                <Ionicons name="add" size={18} color="#fff" />
+                <Text
+                  style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}
                 >
-                  <View
+                  Add Item
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Summary */}
+            <Card style={{ marginTop: 14 }}>
+              <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                Period Summary
+              </Text>
+
+              <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
+                <View style={{ flex: 1 }}>
+                  <Text
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 12,
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
                     }}
                   >
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-                        {it.name}
-                      </Text>
-                      <Text
-                        style={{ color: CFA.muted, marginTop: 3, fontSize: 12 }}
-                      >
-                        {it.category} • {it.active ? "Active" : "Inactive"} •
-                        Qty: {it.qtySoldPeriod}
-                      </Text>
-                    </View>
+                    Revenue
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.ink,
+                      fontWeight: "900",
+                      fontSize: 20,
+                      marginTop: 6,
+                    }}
+                  >
+                    ${summary.revenue.toFixed(0)}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Cost
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.ink,
+                      fontWeight: "900",
+                      fontSize: 20,
+                      marginTop: 6,
+                    }}
+                  >
+                    ${summary.cost.toFixed(0)}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Profit
+                  </Text>
+                  <Text
+                    style={{
+                      color: summary.profit >= 0 ? CFA.success : CFA.danger,
+                      fontWeight: "900",
+                      fontSize: 20,
+                      marginTop: 6,
+                    }}
+                  >
+                    ${summary.profit.toFixed(0)}
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      marginTop: 4,
+                      fontSize: 12,
+                      fontWeight: "800",
+                    }}
+                  >
+                    {summary.avgMargin.toFixed(1)}% margin
+                  </Text>
+                </View>
+              </View>
+            </Card>
 
-                    <View style={{ alignItems: "flex-end" }}>
-                      <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-                        ${rev.toFixed(0)}
-                      </Text>
-                      <Text
+            {/* Search + filters */}
+            <Card style={{ marginTop: 14 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  borderRadius: 16,
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  backgroundColor: "rgba(11,18,32,0.02)",
+                }}
+              >
+                <Ionicons name="search" size={18} color={CFA.muted} />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder="Search items…"
+                  placeholderTextColor="rgba(11,18,32,0.40)"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={{
+                    flex: 1,
+                    color: CFA.ink,
+                    fontWeight: "800",
+                  }}
+                />
+                {query ? (
+                  <Pressable onPress={() => setQuery("")} hitSlop={10}>
+                    <Ionicons name="close-circle" size={18} color={CFA.muted} />
+                  </Pressable>
+                ) : null}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  marginTop: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                {CATS.map((c) => (
+                  <Chip
+                    key={c}
+                    text={c}
+                    active={cat === c}
+                    onPress={() => setCat(c as any)}
+                  />
+                ))}
+
+                <Pressable
+                  onPress={() => setOnlyActive((v) => !v)}
+                  style={{
+                    marginLeft: "auto",
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: onlyActive
+                      ? "rgba(77,123,74,0.30)"
+                      : CFA.border,
+                    backgroundColor: onlyActive
+                      ? "rgba(77,123,74,0.12)"
+                      : "transparent",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <Ionicons
+                    name={onlyActive ? "checkmark-circle" : "ellipse-outline"}
+                    size={16}
+                    color={onlyActive ? CFA.success : CFA.muted}
+                  />
+                  <Text
+                    style={{
+                      color: onlyActive ? CFA.success : CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Active only
+                  </Text>
+                </Pressable>
+              </View>
+            </Card>
+
+            {/* List */}
+            <Card style={{ marginTop: 14 }}>
+              <Text
+                style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}
+              >
+                Items ({filtered.length})
+              </Text>
+
+              {filtered.length === 0 ? (
+                <View style={{ paddingVertical: 22, alignItems: "center" }}>
+                  <Ionicons
+                    name="fast-food-outline"
+                    size={26}
+                    color={CFA.muted}
+                  />
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      marginTop: 8,
+                      fontWeight: "800",
+                    }}
+                  >
+                    No items match your filters.
+                  </Text>
+                </View>
+              ) : (
+                filtered.map((it, idx) => {
+                  const rev = it.price * it.qtySoldPeriod;
+                  const profit = (it.price - it.cost) * it.qtySoldPeriod;
+                  const mp = marginPct(it.price, it.cost);
+                  const mpColor =
+                    mp >= 45 ? CFA.success : mp >= 25 ? CFA.warn : CFA.danger;
+
+                  return (
+                    <Pressable
+                      key={it.id}
+                      onPress={() => openEdit(it)}
+                      style={{
+                        paddingVertical: 12,
+                        borderTopWidth: idx === 0 ? 0 : 1,
+                        borderTopColor: CFA.border,
+                      }}
+                    >
+                      <View
                         style={{
-                          color: mpColor,
-                          fontWeight: "900",
-                          marginTop: 2,
-                          fontSize: 12,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 12,
                         }}
                       >
-                        {mp.toFixed(1)}% margin
-                      </Text>
-                    </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                            {it.name}
+                          </Text>
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              marginTop: 3,
+                              fontSize: 12,
+                            }}
+                          >
+                            {it.category} • {it.active ? "Active" : "Inactive"}{" "}
+                            • Qty: {it.qtySoldPeriod}
+                          </Text>
+                        </View>
+
+                        <View style={{ alignItems: "flex-end" }}>
+                          <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                            ${rev.toFixed(0)}
+                          </Text>
+                          <Text
+                            style={{
+                              color: mpColor,
+                              fontWeight: "900",
+                              marginTop: 2,
+                              fontSize: 12,
+                            }}
+                          >
+                            {mp.toFixed(1)}% margin
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
+                        style={{ flexDirection: "row", gap: 10, marginTop: 10 }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            paddingVertical: 8,
+                            paddingHorizontal: 10,
+                            borderRadius: 14,
+                            borderWidth: 1,
+                            borderColor: CFA.border,
+                            backgroundColor: "rgba(11,18,32,0.02)",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              fontWeight: "900",
+                              fontSize: 11,
+                            }}
+                          >
+                            Price / Cost
+                          </Text>
+                          <Text
+                            style={{
+                              color: CFA.ink,
+                              fontWeight: "900",
+                              marginTop: 4,
+                            }}
+                          >
+                            {money(it.price)} / {money(it.cost)}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={{
+                            flex: 1,
+                            paddingVertical: 8,
+                            paddingHorizontal: 10,
+                            borderRadius: 14,
+                            borderWidth: 1,
+                            borderColor: CFA.border,
+                            backgroundColor: "rgba(11,18,32,0.02)",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              fontWeight: "900",
+                              fontSize: 11,
+                            }}
+                          >
+                            Profit Est.
+                          </Text>
+                          <Text
+                            style={{
+                              color: profit >= 0 ? CFA.success : CFA.danger,
+                              fontWeight: "900",
+                              marginTop: 4,
+                            }}
+                          >
+                            ${profit.toFixed(0)}
+                          </Text>
+                        </View>
+
+                        <Pressable
+                          onPress={() => removeItem(it)}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            borderRadius: 14,
+                            borderWidth: 1,
+                            borderColor: "rgba(229,22,54,0.22)",
+                            backgroundColor: "rgba(229,22,54,0.06)",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Ionicons name="trash" size={18} color={CFA.red} />
+                        </Pressable>
+                      </View>
+                    </Pressable>
+                  );
+                })
+              )}
+            </Card>
+
+            <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
+              UI-only: items are stored in local state for now. We’ll connect to
+              catering-api later.
+            </Text>
+          </ScrollView>
+
+          {/* Add/Edit Modal */}
+          <Modal visible={modalOpen} animationType="slide" transparent>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "rgba(11,18,32,0.35)",
+                justifyContent: "flex-end",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: CFA.card,
+                  borderTopLeftRadius: 26,
+                  borderTopRightRadius: 26,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  padding: 16,
+                  paddingBottom: 16 + insets.bottom,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{ color: CFA.ink, fontWeight: "900", fontSize: 18 }}
+                  >
+                    {editingId ? "Edit Item" : "Add Item"}
+                  </Text>
+                  <Pressable onPress={() => setModalOpen(false)} hitSlop={12}>
+                    <Ionicons name="close" size={22} color={CFA.muted} />
+                  </Pressable>
+                </View>
+
+                <Text style={{ color: CFA.muted }}>
+                  Set price + cost per item to compute margins.
+                </Text>
+
+                <Field
+                  label="Name"
+                  value={fName}
+                  onChangeText={setFName}
+                  placeholder="e.g., Grilled Nuggets Tray"
+                  autoCapitalize="words"
+                />
+
+                <Text
+                  style={{
+                    color: CFA.muted,
+                    fontWeight: "900",
+                    fontSize: 12,
+                    marginTop: 14,
+                  }}
+                >
+                  Category
+                </Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  <View
+                    style={{ flexDirection: "row", gap: 10, paddingRight: 14 }}
+                  >
+                    {(
+                      [
+                        "Entree",
+                        "Side",
+                        "Drink",
+                        "Dessert",
+                        "Sauce",
+                        "Other",
+                      ] as Category[]
+                    ).map((c) => {
+                      const active = fCat === c;
+                      return (
+                        <Pressable
+                          key={c}
+                          onPress={() => setFCat(c)}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            borderRadius: 999,
+                            borderWidth: 1,
+                            borderColor: active ? CFA.red : CFA.border,
+                            backgroundColor: active
+                              ? "rgba(229,22,54,0.10)"
+                              : "transparent",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: active ? CFA.red : CFA.muted,
+                              fontWeight: "900",
+                            }}
+                          >
+                            {c}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+
+                <View style={{ flexDirection: "row", gap: 12, marginTop: 6 }}>
+                  <View style={{ flex: 1 }}>
+                    <Field
+                      label="Price"
+                      value={fPrice}
+                      onChangeText={setFPrice}
+                      placeholder="5.99"
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Field
+                      label="Cost"
+                      value={fCost}
+                      onChangeText={setFCost}
+                      placeholder="1.85"
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: "row", gap: 12, marginTop: 2 }}>
+                  <View style={{ flex: 1 }}>
+                    <Field
+                      label="Qty Sold (Period)"
+                      value={fQty}
+                      onChangeText={setFQty}
+                      placeholder="0"
+                      keyboardType="number-pad"
+                    />
                   </View>
 
-                  <View
-                    style={{ flexDirection: "row", gap: 10, marginTop: 10 }}
-                  >
+                  <View style={{ flex: 1, justifyContent: "flex-end" }}>
+                    <Pressable
+                      onPress={() => setFActive((v) => !v)}
+                      style={{
+                        marginTop: 12,
+                        paddingVertical: 12,
+                        borderRadius: 16,
+                        borderWidth: 1,
+                        borderColor: fActive
+                          ? "rgba(77,123,74,0.30)"
+                          : CFA.border,
+                        backgroundColor: fActive
+                          ? "rgba(77,123,74,0.12)"
+                          : "transparent",
+                        alignItems: "center",
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Ionicons
+                        name={fActive ? "checkmark-circle" : "ellipse-outline"}
+                        size={18}
+                        color={fActive ? CFA.success : CFA.muted}
+                      />
+                      <Text
+                        style={{
+                          color: fActive ? CFA.success : CFA.muted,
+                          fontWeight: "900",
+                        }}
+                      >
+                        {fActive ? "Active" : "Inactive"}
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* quick computed preview */}
+                <View style={{ marginTop: 14 }}>
+                  <View style={{ flexDirection: "row", gap: 12 }}>
                     <View
                       style={{
                         flex: 1,
-                        paddingVertical: 8,
-                        paddingHorizontal: 10,
-                        borderRadius: 14,
+                        padding: 12,
+                        borderRadius: 16,
                         borderWidth: 1,
                         borderColor: CFA.border,
                         backgroundColor: "rgba(11,18,32,0.02)",
@@ -663,7 +967,7 @@ export default function ItemsPage() {
                           fontSize: 11,
                         }}
                       >
-                        Price / Cost
+                        Margin %
                       </Text>
                       <Text
                         style={{
@@ -672,16 +976,15 @@ export default function ItemsPage() {
                           marginTop: 4,
                         }}
                       >
-                        {money(it.price)} / {money(it.cost)}
+                        {marginPct(toNum(fPrice), toNum(fCost)).toFixed(1)}%
                       </Text>
                     </View>
 
                     <View
                       style={{
                         flex: 1,
-                        paddingVertical: 8,
-                        paddingHorizontal: 10,
-                        borderRadius: 14,
+                        padding: 12,
+                        borderRadius: 16,
                         borderWidth: 1,
                         borderColor: CFA.border,
                         backgroundColor: "rgba(11,18,32,0.02)",
@@ -694,315 +997,62 @@ export default function ItemsPage() {
                           fontSize: 11,
                         }}
                       >
-                        Profit Est.
+                        Est. Profit
                       </Text>
                       <Text
                         style={{
-                          color: profit >= 0 ? CFA.success : CFA.danger,
+                          color: CFA.ink,
                           fontWeight: "900",
                           marginTop: 4,
                         }}
                       >
-                        ${profit.toFixed(0)}
+                        $
+                        {(
+                          (toNum(fPrice) - toNum(fCost)) *
+                          Math.max(0, Math.floor(toNum(fQty)))
+                        ).toFixed(0)}
                       </Text>
                     </View>
-
-                    <Pressable
-                      onPress={() => removeItem(it)}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 12,
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(229,22,54,0.22)",
-                        backgroundColor: "rgba(229,22,54,0.06)",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Ionicons name="trash" size={18} color={CFA.red} />
-                    </Pressable>
                   </View>
-                </Pressable>
-              );
-            })
-          )}
-        </Card>
-
-        <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
-          UI-only: items are stored in local state for now. We’ll connect to
-          catering-api later.
-        </Text>
-      </ScrollView>
-
-      {/* Add/Edit Modal */}
-      <Modal visible={modalOpen} animationType="slide" transparent>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(11,18,32,0.35)",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: CFA.card,
-              borderTopLeftRadius: 26,
-              borderTopRightRadius: 26,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              padding: 16,
-              paddingBottom: 16 + insets.bottom,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 6,
-              }}
-            >
-              <Text style={{ color: CFA.ink, fontWeight: "900", fontSize: 18 }}>
-                {editingId ? "Edit Item" : "Add Item"}
-              </Text>
-              <Pressable onPress={() => setModalOpen(false)} hitSlop={12}>
-                <Ionicons name="close" size={22} color={CFA.muted} />
-              </Pressable>
-            </View>
-
-            <Text style={{ color: CFA.muted }}>
-              Set price + cost per item to compute margins.
-            </Text>
-
-            <Field
-              label="Name"
-              value={fName}
-              onChangeText={setFName}
-              placeholder="e.g., Grilled Nuggets Tray"
-              autoCapitalize="words"
-            />
-
-            <Text
-              style={{
-                color: CFA.muted,
-                fontWeight: "900",
-                fontSize: 12,
-                marginTop: 14,
-              }}
-            >
-              Category
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ marginTop: 10 }}
-            >
-              <View style={{ flexDirection: "row", gap: 10, paddingRight: 14 }}>
-                {(
-                  [
-                    "Entree",
-                    "Side",
-                    "Drink",
-                    "Dessert",
-                    "Sauce",
-                    "Other",
-                  ] as Category[]
-                ).map((c) => {
-                  const active = fCat === c;
-                  return (
-                    <Pressable
-                      key={c}
-                      onPress={() => setFCat(c)}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 12,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: active ? CFA.red : CFA.border,
-                        backgroundColor: active
-                          ? "rgba(229,22,54,0.10)"
-                          : "transparent",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: active ? CFA.red : CFA.muted,
-                          fontWeight: "900",
-                        }}
-                      >
-                        {c}
-                      </Text>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </ScrollView>
-
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 6 }}>
-              <View style={{ flex: 1 }}>
-                <Field
-                  label="Price"
-                  value={fPrice}
-                  onChangeText={setFPrice}
-                  placeholder="5.99"
-                  keyboardType="decimal-pad"
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Field
-                  label="Cost"
-                  value={fCost}
-                  onChangeText={setFCost}
-                  placeholder="1.85"
-                  keyboardType="decimal-pad"
-                />
-              </View>
-            </View>
-
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 2 }}>
-              <View style={{ flex: 1 }}>
-                <Field
-                  label="Qty Sold (Period)"
-                  value={fQty}
-                  onChangeText={setFQty}
-                  placeholder="0"
-                  keyboardType="number-pad"
-                />
-              </View>
-
-              <View style={{ flex: 1, justifyContent: "flex-end" }}>
-                <Pressable
-                  onPress={() => setFActive((v) => !v)}
-                  style={{
-                    marginTop: 12,
-                    paddingVertical: 12,
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: fActive ? "rgba(77,123,74,0.30)" : CFA.border,
-                    backgroundColor: fActive
-                      ? "rgba(77,123,74,0.12)"
-                      : "transparent",
-                    alignItems: "center",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    gap: 8,
-                  }}
-                >
-                  <Ionicons
-                    name={fActive ? "checkmark-circle" : "ellipse-outline"}
-                    size={18}
-                    color={fActive ? CFA.success : CFA.muted}
-                  />
-                  <Text
-                    style={{
-                      color: fActive ? CFA.success : CFA.muted,
-                      fontWeight: "900",
-                    }}
-                  >
-                    {fActive ? "Active" : "Inactive"}
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-
-            {/* quick computed preview */}
-            <View style={{ marginTop: 14 }}>
-              <View style={{ flexDirection: "row", gap: 12 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    padding: 12,
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: CFA.border,
-                    backgroundColor: "rgba(11,18,32,0.02)",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: CFA.muted,
-                      fontWeight: "900",
-                      fontSize: 11,
-                    }}
-                  >
-                    Margin %
-                  </Text>
-                  <Text
-                    style={{ color: CFA.ink, fontWeight: "900", marginTop: 4 }}
-                  >
-                    {marginPct(toNum(fPrice), toNum(fCost)).toFixed(1)}%
-                  </Text>
                 </View>
 
-                <View
-                  style={{
-                    flex: 1,
-                    padding: 12,
-                    borderRadius: 16,
-                    borderWidth: 1,
-                    borderColor: CFA.border,
-                    backgroundColor: "rgba(11,18,32,0.02)",
-                  }}
-                >
-                  <Text
+                <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
+                  <Pressable
+                    onPress={() => setModalOpen(false)}
                     style={{
-                      color: CFA.muted,
-                      fontWeight: "900",
-                      fontSize: 11,
+                      flex: 1,
+                      paddingVertical: 12,
+                      borderRadius: 18,
+                      borderWidth: 1,
+                      borderColor: CFA.border,
+                      backgroundColor: "transparent",
+                      alignItems: "center",
                     }}
                   >
-                    Est. Profit
-                  </Text>
-                  <Text
-                    style={{ color: CFA.ink, fontWeight: "900", marginTop: 4 }}
+                    <Text style={{ color: CFA.muted, fontWeight: "900" }}>
+                      Cancel
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={saveItem}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      borderRadius: 18,
+                      backgroundColor: CFA.red,
+                      alignItems: "center",
+                    }}
                   >
-                    $
-                    {(
-                      (toNum(fPrice) - toNum(fCost)) *
-                      Math.max(0, Math.floor(toNum(fQty)))
-                    ).toFixed(0)}
-                  </Text>
+                    <Text style={{ color: "#fff", fontWeight: "900" }}>
+                      {editingId ? "Save" : "Create"}
+                    </Text>
+                  </Pressable>
                 </View>
               </View>
             </View>
-
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
-              <Pressable
-                onPress={() => setModalOpen(false)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderRadius: 18,
-                  borderWidth: 1,
-                  borderColor: CFA.border,
-                  backgroundColor: "transparent",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: CFA.muted, fontWeight: "900" }}>
-                  Cancel
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={saveItem}
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderRadius: 18,
-                  backgroundColor: CFA.red,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "900" }}>
-                  {editingId ? "Save" : "Create"}
-                </Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
-  );
+          </Modal>
+        </SafeAreaView>
+      </TabScreenTransition>
+    );
 }

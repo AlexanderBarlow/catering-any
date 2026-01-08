@@ -15,6 +15,8 @@ import {
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { CFA } from "../../constants/theme";
+import TabScreenTransition from "../../components/TabScreenTransition";
+
 
 type Role = "ADMIN" | "MANAGER" | "STAFF";
 
@@ -311,534 +313,578 @@ export default function UsersPage() {
     );
   }
 
-  return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: CFA.cream }}
-      edges={["top", "left", "right"]}
-    >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 12,
-          paddingBottom: bottomPadForNav,
-          paddingLeft: sidePad,
-          paddingRight: sidePad,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 12,
-          }}
+    return (
+      <TabScreenTransition>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: CFA.cream }}
+          edges={["top", "left", "right"]}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}>
-              Users
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 4 }}>
-              Manage access to analytics and operations
-            </Text>
-          </View>
-
-          <Pressable
-            onPress={openAdd}
-            style={{
-              paddingVertical: 10,
-              paddingHorizontal: 12,
-              borderRadius: 16,
-              backgroundColor: CFA.red,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
+          <ScrollView
+            contentContainerStyle={{
+              paddingTop: 12,
+              paddingBottom: bottomPadForNav,
+              paddingLeft: sidePad,
+              paddingRight: sidePad,
             }}
+            showsVerticalScrollIndicator={false}
           >
-            <Ionicons name="add" size={18} color="#fff" />
-            <Text style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}>
-              Add User
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Summary */}
-        <Card style={{ marginTop: 14 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Total Users
-              </Text>
-              <Text
-                style={{
-                  color: CFA.ink,
-                  fontWeight: "900",
-                  fontSize: 22,
-                  marginTop: 6,
-                }}
-              >
-                {totals.total}
-              </Text>
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Active
-              </Text>
-              <Text
-                style={{
-                  color: CFA.ink,
-                  fontWeight: "900",
-                  fontSize: 22,
-                  marginTop: 6,
-                }}
-              >
-                {totals.active}
-              </Text>
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Roles
-              </Text>
-              <Text
-                style={{ color: CFA.muted, marginTop: 6, fontWeight: "800" }}
-              >
-                {totals.admins} A • {totals.managers} M • {totals.staff} S
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        {/* Search */}
-        <Card style={{ marginTop: 14 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 10,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              borderRadius: 16,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              backgroundColor: "rgba(11,18,32,0.02)",
-            }}
-          >
-            <Ionicons name="search" size={18} color={CFA.muted} />
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Search by name or email…"
-              placeholderTextColor="rgba(11,18,32,0.40)"
-              autoCapitalize="none"
-              autoCorrect={false}
-              style={{
-                flex: 1,
-                color: CFA.ink,
-                fontWeight: "800",
-              }}
-            />
-            {query ? (
-              <Pressable onPress={() => setQuery("")} hitSlop={10}>
-                <Ionicons name="close-circle" size={18} color={CFA.muted} />
-              </Pressable>
-            ) : null}
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 10,
-              marginTop: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            {ROLE_FILTERS.map((r) => (
-              <Chip
-                key={r.key}
-                text={r.label}
-                active={roleFilter === r.key}
-                onPress={() => setRoleFilter(r.key)}
-              />
-            ))}
-
-            <Pressable
-              onPress={() => setOnlyActive((v) => !v)}
-              style={{
-                marginLeft: "auto",
-                paddingVertical: 8,
-                paddingHorizontal: 12,
-                borderRadius: 999,
-                borderWidth: 1,
-                borderColor: onlyActive ? "rgba(77,123,74,0.30)" : CFA.border,
-                backgroundColor: onlyActive
-                  ? "rgba(77,123,74,0.12)"
-                  : "transparent",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Ionicons
-                name={onlyActive ? "checkmark-circle" : "ellipse-outline"}
-                size={16}
-                color={onlyActive ? CFA.success : CFA.muted}
-              />
-              <Text
-                style={{
-                  color: onlyActive ? CFA.success : CFA.muted,
-                  fontWeight: "900",
-                  fontSize: 12,
-                }}
-              >
-                Active only
-              </Text>
-            </Pressable>
-          </View>
-        </Card>
-
-        {/* List */}
-        <Card style={{ marginTop: 14 }}>
-          <Text style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}>
-            Directory
-          </Text>
-
-          {filtered.length === 0 ? (
-            <View style={{ paddingVertical: 22, alignItems: "center" }}>
-              <Ionicons name="people-outline" size={26} color={CFA.muted} />
-              <Text
-                style={{ color: CFA.muted, marginTop: 8, fontWeight: "800" }}
-              >
-                No users match your filters.
-              </Text>
-            </View>
-          ) : (
-            filtered.map((u, idx) => (
-              <View
-                key={u.id}
-                style={{
-                  paddingVertical: 12,
-                  borderTopWidth: idx === 0 ? 0 : 1,
-                  borderTopColor: CFA.border,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 12,
-                }}
-              >
-                <View style={{ flex: 1 }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 10,
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 999,
-                        backgroundColor: "rgba(11,18,32,0.06)",
-                        borderWidth: 1,
-                        borderColor: CFA.border,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-                        {u.name
-                          .split(" ")
-                          .slice(0, 2)
-                          .map((p) => p[0]?.toUpperCase())
-                          .join("")}
-                      </Text>
-                    </View>
-
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-                        {u.name}
-                      </Text>
-                      <Text
-                        style={{ color: CFA.muted, marginTop: 2, fontSize: 12 }}
-                      >
-                        {u.email}
-                      </Text>
-                    </View>
-
-                    <View
-                      style={{
-                        paddingVertical: 6,
-                        paddingHorizontal: 10,
-                        borderRadius: 999,
-                        backgroundColor: pillColor(u.role),
-                        borderWidth: 1,
-                        borderColor: "rgba(0,0,0,0.06)",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontWeight: "900",
-                          fontSize: 12,
-                          color: pillTextColor(u.role),
-                        }}
-                      >
-                        {prettyRole(u.role)}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{ flexDirection: "row", gap: 12, marginTop: 10 }}
-                  >
-                    <View
-                      style={{
-                        paddingVertical: 6,
-                        paddingHorizontal: 10,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: CFA.border,
-                        backgroundColor: "rgba(11,18,32,0.02)",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <Ionicons
-                        name={u.active ? "flash" : "pause"}
-                        size={14}
-                        color={u.active ? CFA.success : CFA.muted}
-                      />
-                      <Text
-                        style={{
-                          color: CFA.muted,
-                          fontWeight: "900",
-                          fontSize: 12,
-                        }}
-                      >
-                        {u.active ? "Active" : "Inactive"}
-                      </Text>
-                    </View>
-
-                    <Text
-                      style={{ color: CFA.muted, fontSize: 12, marginTop: 6 }}
-                    >
-                      Added {new Date(u.createdAt).toLocaleDateString()}
-                    </Text>
-                  </View>
-                </View>
-
-                {/* actions */}
-                <View style={{ gap: 10, alignItems: "flex-end" }}>
-                  <Pressable
-                    onPress={() => toggleActive(u)}
-                    disabled={u.role === "ADMIN"}
-                    style={{
-                      paddingVertical: 8,
-                      paddingHorizontal: 10,
-                      borderRadius: 14,
-                      borderWidth: 1,
-                      borderColor: CFA.border,
-                      backgroundColor: CFA.card,
-                      opacity: u.role === "ADMIN" ? 0.55 : 1,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Ionicons
-                      name={u.active ? "pause" : "play"}
-                      size={16}
-                      color={CFA.muted}
-                    />
-                    <Text
-                      style={{
-                        color: CFA.muted,
-                        fontWeight: "900",
-                        fontSize: 12,
-                      }}
-                    >
-                      {u.active ? "Disable" : "Enable"}
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => removeUser(u)}
-                    disabled={u.role === "ADMIN"}
-                    style={{
-                      paddingVertical: 8,
-                      paddingHorizontal: 10,
-                      borderRadius: 14,
-                      borderWidth: 1,
-                      borderColor: "rgba(229,22,54,0.22)",
-                      backgroundColor: "rgba(229,22,54,0.06)",
-                      opacity: u.role === "ADMIN" ? 0.55 : 1,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 8,
-                    }}
-                  >
-                    <Ionicons name="trash" size={16} color={CFA.red} />
-                    <Text
-                      style={{
-                        color: CFA.red,
-                        fontWeight: "900",
-                        fontSize: 12,
-                      }}
-                    >
-                      Remove
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-            ))
-          )}
-        </Card>
-
-        <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
-          UI-only: users are stored in local state for now. We’ll connect this
-          to catering-api later.
-        </Text>
-      </ScrollView>
-
-      {/* Add User Modal */}
-      <Modal visible={modalOpen} animationType="slide" transparent>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(11,18,32,0.35)",
-            justifyContent: "flex-end",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: CFA.card,
-              borderTopLeftRadius: 26,
-              borderTopRightRadius: 26,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              padding: 16,
-              paddingBottom: 16 + insets.bottom,
-            }}
-          >
+            {/* Header */}
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 6,
+                alignItems: "flex-start",
+                gap: 12,
               }}
             >
-              <Text style={{ color: CFA.ink, fontWeight: "900", fontSize: 18 }}>
-                Add User
-              </Text>
-              <Pressable onPress={() => setModalOpen(false)} hitSlop={12}>
-                <Ionicons name="close" size={22} color={CFA.muted} />
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}
+                >
+                  Users
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 4 }}>
+                  Manage access to analytics and operations
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={openAdd}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderRadius: 16,
+                  backgroundColor: CFA.red,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <Ionicons name="add" size={18} color="#fff" />
+                <Text
+                  style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}
+                >
+                  Add User
+                </Text>
               </Pressable>
             </View>
 
-            <Text style={{ color: CFA.muted }}>
-              Create an account for staff access (UI-only for now).
+            {/* Summary */}
+            <Card style={{ marginTop: 14 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Total Users
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.ink,
+                      fontWeight: "900",
+                      fontSize: 22,
+                      marginTop: 6,
+                    }}
+                  >
+                    {totals.total}
+                  </Text>
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Active
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.ink,
+                      fontWeight: "900",
+                      fontSize: 22,
+                      marginTop: 6,
+                    }}
+                  >
+                    {totals.active}
+                  </Text>
+                </View>
+
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Roles
+                  </Text>
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      marginTop: 6,
+                      fontWeight: "800",
+                    }}
+                  >
+                    {totals.admins} A • {totals.managers} M • {totals.staff} S
+                  </Text>
+                </View>
+              </View>
+            </Card>
+
+            {/* Search */}
+            <Card style={{ marginTop: 14 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  borderRadius: 16,
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  backgroundColor: "rgba(11,18,32,0.02)",
+                }}
+              >
+                <Ionicons name="search" size={18} color={CFA.muted} />
+                <TextInput
+                  value={query}
+                  onChangeText={setQuery}
+                  placeholder="Search by name or email…"
+                  placeholderTextColor="rgba(11,18,32,0.40)"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={{
+                    flex: 1,
+                    color: CFA.ink,
+                    fontWeight: "800",
+                  }}
+                />
+                {query ? (
+                  <Pressable onPress={() => setQuery("")} hitSlop={10}>
+                    <Ionicons name="close-circle" size={18} color={CFA.muted} />
+                  </Pressable>
+                ) : null}
+              </View>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  marginTop: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                {ROLE_FILTERS.map((r) => (
+                  <Chip
+                    key={r.key}
+                    text={r.label}
+                    active={roleFilter === r.key}
+                    onPress={() => setRoleFilter(r.key)}
+                  />
+                ))}
+
+                <Pressable
+                  onPress={() => setOnlyActive((v) => !v)}
+                  style={{
+                    marginLeft: "auto",
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 999,
+                    borderWidth: 1,
+                    borderColor: onlyActive
+                      ? "rgba(77,123,74,0.30)"
+                      : CFA.border,
+                    backgroundColor: onlyActive
+                      ? "rgba(77,123,74,0.12)"
+                      : "transparent",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <Ionicons
+                    name={onlyActive ? "checkmark-circle" : "ellipse-outline"}
+                    size={16}
+                    color={onlyActive ? CFA.success : CFA.muted}
+                  />
+                  <Text
+                    style={{
+                      color: onlyActive ? CFA.success : CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Active only
+                  </Text>
+                </Pressable>
+              </View>
+            </Card>
+
+            {/* List */}
+            <Card style={{ marginTop: 14 }}>
+              <Text
+                style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}
+              >
+                Directory
+              </Text>
+
+              {filtered.length === 0 ? (
+                <View style={{ paddingVertical: 22, alignItems: "center" }}>
+                  <Ionicons name="people-outline" size={26} color={CFA.muted} />
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      marginTop: 8,
+                      fontWeight: "800",
+                    }}
+                  >
+                    No users match your filters.
+                  </Text>
+                </View>
+              ) : (
+                filtered.map((u, idx) => (
+                  <View
+                    key={u.id}
+                    style={{
+                      paddingVertical: 12,
+                      borderTopWidth: idx === 0 ? 0 : 1,
+                      borderTopColor: CFA.border,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 12,
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 10,
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 999,
+                            backgroundColor: "rgba(11,18,32,0.06)",
+                            borderWidth: 1,
+                            borderColor: CFA.border,
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                            {u.name
+                              .split(" ")
+                              .slice(0, 2)
+                              .map((p) => p[0]?.toUpperCase())
+                              .join("")}
+                          </Text>
+                        </View>
+
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                            {u.name}
+                          </Text>
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              marginTop: 2,
+                              fontSize: 12,
+                            }}
+                          >
+                            {u.email}
+                          </Text>
+                        </View>
+
+                        <View
+                          style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 10,
+                            borderRadius: 999,
+                            backgroundColor: pillColor(u.role),
+                            borderWidth: 1,
+                            borderColor: "rgba(0,0,0,0.06)",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontWeight: "900",
+                              fontSize: 12,
+                              color: pillTextColor(u.role),
+                            }}
+                          >
+                            {prettyRole(u.role)}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View
+                        style={{ flexDirection: "row", gap: 12, marginTop: 10 }}
+                      >
+                        <View
+                          style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 10,
+                            borderRadius: 999,
+                            borderWidth: 1,
+                            borderColor: CFA.border,
+                            backgroundColor: "rgba(11,18,32,0.02)",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 8,
+                          }}
+                        >
+                          <Ionicons
+                            name={u.active ? "flash" : "pause"}
+                            size={14}
+                            color={u.active ? CFA.success : CFA.muted}
+                          />
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              fontWeight: "900",
+                              fontSize: 12,
+                            }}
+                          >
+                            {u.active ? "Active" : "Inactive"}
+                          </Text>
+                        </View>
+
+                        <Text
+                          style={{
+                            color: CFA.muted,
+                            fontSize: 12,
+                            marginTop: 6,
+                          }}
+                        >
+                          Added {new Date(u.createdAt).toLocaleDateString()}
+                        </Text>
+                      </View>
+                    </View>
+
+                    {/* actions */}
+                    <View style={{ gap: 10, alignItems: "flex-end" }}>
+                      <Pressable
+                        onPress={() => toggleActive(u)}
+                        disabled={u.role === "ADMIN"}
+                        style={{
+                          paddingVertical: 8,
+                          paddingHorizontal: 10,
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: CFA.border,
+                          backgroundColor: CFA.card,
+                          opacity: u.role === "ADMIN" ? 0.55 : 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <Ionicons
+                          name={u.active ? "pause" : "play"}
+                          size={16}
+                          color={CFA.muted}
+                        />
+                        <Text
+                          style={{
+                            color: CFA.muted,
+                            fontWeight: "900",
+                            fontSize: 12,
+                          }}
+                        >
+                          {u.active ? "Disable" : "Enable"}
+                        </Text>
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => removeUser(u)}
+                        disabled={u.role === "ADMIN"}
+                        style={{
+                          paddingVertical: 8,
+                          paddingHorizontal: 10,
+                          borderRadius: 14,
+                          borderWidth: 1,
+                          borderColor: "rgba(229,22,54,0.22)",
+                          backgroundColor: "rgba(229,22,54,0.06)",
+                          opacity: u.role === "ADMIN" ? 0.55 : 1,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <Ionicons name="trash" size={16} color={CFA.red} />
+                        <Text
+                          style={{
+                            color: CFA.red,
+                            fontWeight: "900",
+                            fontSize: 12,
+                          }}
+                        >
+                          Remove
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                ))
+              )}
+            </Card>
+
+            <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
+              UI-only: users are stored in local state for now. We’ll connect
+              this to catering-api later.
             </Text>
+          </ScrollView>
 
-            <Field
-              label="Name"
-              value={newName}
-              onChangeText={setNewName}
-              placeholder="e.g., Alex Barlow"
-              autoCapitalize="words"
-            />
-            <Field
-              label="Email"
-              value={newEmail}
-              onChangeText={setNewEmail}
-              placeholder="e.g., user@catering.local"
-              keyboardType="email-address"
-            />
-
-            <Text
+          {/* Add User Modal */}
+          <Modal visible={modalOpen} animationType="slide" transparent>
+            <View
               style={{
-                color: CFA.muted,
-                fontWeight: "900",
-                fontSize: 12,
-                marginTop: 14,
+                flex: 1,
+                backgroundColor: "rgba(11,18,32,0.35)",
+                justifyContent: "flex-end",
               }}
             >
-              Role
-            </Text>
-            <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
-              {(["ADMIN", "MANAGER", "STAFF"] as Role[]).map((r) => {
-                const active = newRole === r;
-                return (
+              <View
+                style={{
+                  backgroundColor: CFA.card,
+                  borderTopLeftRadius: 26,
+                  borderTopRightRadius: 26,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  padding: 16,
+                  paddingBottom: 16 + insets.bottom,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{ color: CFA.ink, fontWeight: "900", fontSize: 18 }}
+                  >
+                    Add User
+                  </Text>
+                  <Pressable onPress={() => setModalOpen(false)} hitSlop={12}>
+                    <Ionicons name="close" size={22} color={CFA.muted} />
+                  </Pressable>
+                </View>
+
+                <Text style={{ color: CFA.muted }}>
+                  Create an account for staff access (UI-only for now).
+                </Text>
+
+                <Field
+                  label="Name"
+                  value={newName}
+                  onChangeText={setNewName}
+                  placeholder="e.g., Alex Barlow"
+                  autoCapitalize="words"
+                />
+                <Field
+                  label="Email"
+                  value={newEmail}
+                  onChangeText={setNewEmail}
+                  placeholder="e.g., user@catering.local"
+                  keyboardType="email-address"
+                />
+
+                <Text
+                  style={{
+                    color: CFA.muted,
+                    fontWeight: "900",
+                    fontSize: 12,
+                    marginTop: 14,
+                  }}
+                >
+                  Role
+                </Text>
+                <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+                  {(["ADMIN", "MANAGER", "STAFF"] as Role[]).map((r) => {
+                    const active = newRole === r;
+                    return (
+                      <Pressable
+                        key={r}
+                        onPress={() => setNewRole(r)}
+                        style={{
+                          flex: 1,
+                          paddingVertical: 10,
+                          borderRadius: 16,
+                          borderWidth: 1,
+                          borderColor: active ? CFA.red : CFA.border,
+                          backgroundColor: active
+                            ? "rgba(229,22,54,0.10)"
+                            : "transparent",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: active ? CFA.red : CFA.muted,
+                            fontWeight: "900",
+                          }}
+                        >
+                          {prettyRole(r)}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+
+                <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
                   <Pressable
-                    key={r}
-                    onPress={() => setNewRole(r)}
+                    onPress={() => setModalOpen(false)}
                     style={{
                       flex: 1,
-                      paddingVertical: 10,
-                      borderRadius: 16,
+                      paddingVertical: 12,
+                      borderRadius: 18,
                       borderWidth: 1,
-                      borderColor: active ? CFA.red : CFA.border,
-                      backgroundColor: active
-                        ? "rgba(229,22,54,0.10)"
-                        : "transparent",
+                      borderColor: CFA.border,
+                      backgroundColor: "transparent",
                       alignItems: "center",
                     }}
                   >
-                    <Text
-                      style={{
-                        color: active ? CFA.red : CFA.muted,
-                        fontWeight: "900",
-                      }}
-                    >
-                      {prettyRole(r)}
+                    <Text style={{ color: CFA.muted, fontWeight: "900" }}>
+                      Cancel
                     </Text>
                   </Pressable>
-                );
-              })}
-            </View>
 
-            <View style={{ flexDirection: "row", gap: 12, marginTop: 16 }}>
-              <Pressable
-                onPress={() => setModalOpen(false)}
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderRadius: 18,
-                  borderWidth: 1,
-                  borderColor: CFA.border,
-                  backgroundColor: "transparent",
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: CFA.muted, fontWeight: "900" }}>
-                  Cancel
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={addUser}
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  borderRadius: 18,
-                  backgroundColor: CFA.red,
-                  alignItems: "center",
-                }}
-              >
-                <Text style={{ color: "#fff", fontWeight: "900" }}>Create</Text>
-              </Pressable>
+                  <Pressable
+                    onPress={addUser}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      borderRadius: 18,
+                      backgroundColor: CFA.red,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: "#fff", fontWeight: "900" }}>
+                      Create
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
-      </Modal>
-    </SafeAreaView>
-  );
+          </Modal>
+        </SafeAreaView>
+      </TabScreenTransition>
+    );
 }

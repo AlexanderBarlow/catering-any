@@ -14,6 +14,8 @@ import {
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { CFA } from "../../constants/theme";
+import TabScreenTransition from "../../components/TabScreenTransition";
+
 
 type Range = "1d" | "7d" | "30d" | "ytd";
 type TicketStatus =
@@ -411,663 +413,707 @@ export default function OperationsPage() {
     );
   }
 
-  return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: CFA.cream }}
-      edges={["top", "left", "right"]}
-    >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 12,
-          paddingBottom: bottomPadForNav,
-          paddingLeft: sidePad,
-          paddingRight: sidePad,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            gap: 12,
-          }}
+    return (
+      <TabScreenTransition>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: CFA.cream }}
+          edges={["top", "left", "right"]}
         >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}>
-              Operations
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 4 }}>
-              Ticket flow, readiness, and shift-level insights
-            </Text>
-          </View>
-
-          <Pressable
-            onPress={clearMockTickets}
-            style={{
-              paddingVertical: 10,
-              paddingHorizontal: 12,
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              backgroundColor: CFA.card,
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
+          <ScrollView
+            contentContainerStyle={{
+              paddingTop: 12,
+              paddingBottom: bottomPadForNav,
+              paddingLeft: sidePad,
+              paddingRight: sidePad,
             }}
+            showsVerticalScrollIndicator={false}
           >
-            <Ionicons name="refresh" size={16} color={CFA.muted} />
-            <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-              Reset
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Range */}
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 10,
-            marginTop: 14,
-            flexWrap: "wrap",
-            alignItems: "center",
-          }}
-        >
-          <Chip
-            text="Today"
-            active={range === "1d"}
-            onPress={() => setRange("1d")}
-          />
-          <Chip
-            text="7 Days"
-            active={range === "7d"}
-            onPress={() => setRange("7d")}
-          />
-          <Chip
-            text="30 Days"
-            active={range === "30d"}
-            onPress={() => setRange("30d")}
-          />
-          <Chip
-            text="YTD"
-            active={range === "ytd"}
-            onPress={() => setRange("ytd")}
-          />
-
-          <View style={{ marginLeft: "auto" }}>
-            <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-              UI-only • Range: {range.toUpperCase()}
-            </Text>
-          </View>
-        </View>
-
-        {/* KPI Row */}
-        <View style={{ flexDirection: "row", gap: 12, marginTop: 14 }}>
-          <Card style={{ flex: 1 }}>
-            <Text style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}>
-              Orders
-            </Text>
-            <Text
-              style={{
-                color: CFA.ink,
-                fontSize: 24,
-                fontWeight: "900",
-                marginTop: 6,
-              }}
-            >
-              {computed.total}
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
-              Active: {computed.active} • Done: {computed.completed}
-            </Text>
-          </Card>
-
-          <Card style={{ flex: 1 }}>
-            <Text style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}>
-              Avg Ticket Time
-            </Text>
-            <Text
-              style={{
-                color: CFA.ink,
-                fontSize: 24,
-                fontWeight: "900",
-                marginTop: 6,
-              }}
-            >
-              {computed.avgMins.toFixed(1)} min
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
-              Based on completed tickets
-            </Text>
-          </Card>
-        </View>
-
-        <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
-          <Card style={{ flex: 1 }}>
-            <Text style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}>
-              On-time %
-            </Text>
-            <Text
-              style={{
-                color: CFA.ink,
-                fontSize: 24,
-                fontWeight: "900",
-                marginTop: 6,
-              }}
-            >
-              {computed.onTimePct.toFixed(0)}%
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
-              Completed within promised mins
-            </Text>
-          </Card>
-
-          <Card style={{ flex: 1 }}>
-            <Text style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}>
-              Cancelled %
-            </Text>
-            <Text
-              style={{
-                color: CFA.ink,
-                fontSize: 24,
-                fontWeight: "900",
-                marginTop: 6,
-              }}
-            >
-              {computed.cancelledPct.toFixed(0)}%
-            </Text>
-            <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
-              Cancelled: {computed.cancelled}
-            </Text>
-          </Card>
-        </View>
-
-        {/* Distribution */}
-        <Card style={{ marginTop: 14 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-              Ticket Time Distribution
-            </Text>
-            <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-              Total: {bucketTotal}
-            </Text>
-          </View>
-
-          <BarRow
-            label="0–10m"
-            value={computed.buckets["0–10m"]}
-            total={bucketTotal}
-            color={"rgba(77,123,74,0.60)"}
-          />
-          <BarRow
-            label="11–15m"
-            value={computed.buckets["11–15m"]}
-            total={bucketTotal}
-            color={"rgba(77,123,74,0.40)"}
-          />
-          <BarRow
-            label="16–20m"
-            value={computed.buckets["16–20m"]}
-            total={bucketTotal}
-            color={"rgba(255,193,7,0.45)"}
-          />
-          <BarRow
-            label="21–30m"
-            value={computed.buckets["21–30m"]}
-            total={bucketTotal}
-            color={"rgba(255,193,7,0.35)"}
-          />
-          <BarRow
-            label="30m+"
-            value={computed.buckets["30m+"]}
-            total={bucketTotal}
-            color={"rgba(229,22,54,0.40)"}
-          />
-
-          <Text style={{ color: CFA.muted, marginTop: 10, fontSize: 12 }}>
-            Tip: we’ll swap this for real ticket histograms once the API is
-            wired.
-          </Text>
-        </Card>
-
-        {/* Recent tickets */}
-        <Card style={{ marginTop: 14 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 10,
-            }}
-          >
-            <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-              Recent Tickets
-            </Text>
-            <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-              Revenue: {money(computed.revenue)}
-            </Text>
-          </View>
-
-          {tickets.length === 0 ? (
-            <View style={{ paddingVertical: 22, alignItems: "center" }}>
-              <Ionicons name="timer-outline" size={26} color={CFA.muted} />
-              <Text
-                style={{ color: CFA.muted, marginTop: 8, fontWeight: "800" }}
-              >
-                No tickets yet (UI-only).
-              </Text>
-            </View>
-          ) : (
-            tickets
-              .slice()
-              .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-              .map((t, idx) => {
-                const pill = statusPill(t.status);
-                const isLate =
-                  t.status === "COMPLETED" &&
-                  (t.durationMins || 0) > t.promisedMins;
-
-                return (
-                  <View
-                    key={t.id}
-                    style={{
-                      paddingVertical: 12,
-                      borderTopWidth: idx === 0 ? 0 : 1,
-                      borderTopColor: CFA.border,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 12,
-                      }}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text style={{ color: CFA.ink, fontWeight: "900" }}>
-                          {t.customer}
-                        </Text>
-                        <Text
-                          style={{
-                            color: CFA.muted,
-                            marginTop: 3,
-                            fontSize: 12,
-                          }}
-                        >
-                          {formatTime(t.createdAt)} • {t.itemsCount} items •{" "}
-                          {money(t.revenue)}
-                        </Text>
-                      </View>
-
-                      <View
-                        style={{
-                          paddingVertical: 6,
-                          paddingHorizontal: 10,
-                          borderRadius: 999,
-                          backgroundColor: pill.bg,
-                          borderWidth: 1,
-                          borderColor: "rgba(0,0,0,0.06)",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <Ionicons
-                          name={
-                            t.status === "READY"
-                              ? "checkmark-circle"
-                              : t.status === "IN_PROGRESS"
-                              ? "flame"
-                              : t.status === "COMPLETED"
-                              ? "checkmark-done"
-                              : t.status === "CANCELLED"
-                              ? "close-circle"
-                              : "ellipse"
-                          }
-                          size={14}
-                          color={pill.fg}
-                        />
-                        <Text
-                          style={{
-                            color: pill.fg,
-                            fontWeight: "900",
-                            fontSize: 12,
-                          }}
-                        >
-                          {pill.label}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View
-                      style={{ flexDirection: "row", gap: 10, marginTop: 10 }}
-                    >
-                      <View
-                        style={{
-                          flex: 1,
-                          paddingVertical: 8,
-                          paddingHorizontal: 10,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: CFA.border,
-                          backgroundColor: "rgba(11,18,32,0.02)",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: CFA.muted,
-                            fontWeight: "900",
-                            fontSize: 11,
-                          }}
-                        >
-                          Promised
-                        </Text>
-                        <Text
-                          style={{
-                            color: CFA.ink,
-                            fontWeight: "900",
-                            marginTop: 4,
-                          }}
-                        >
-                          {t.promisedMins} min
-                        </Text>
-                      </View>
-
-                      <View
-                        style={{
-                          flex: 1,
-                          paddingVertical: 8,
-                          paddingHorizontal: 10,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: CFA.border,
-                          backgroundColor: "rgba(11,18,32,0.02)",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: CFA.muted,
-                            fontWeight: "900",
-                            fontSize: 11,
-                          }}
-                        >
-                          Ticket Time
-                        </Text>
-                        <Text
-                          style={{
-                            color: isLate ? CFA.danger : CFA.ink,
-                            fontWeight: "900",
-                            marginTop: 4,
-                          }}
-                        >
-                          {t.status === "COMPLETED"
-                            ? `${t.durationMins} min`
-                            : "—"}
-                        </Text>
-                      </View>
-
-                      <View
-                        style={{
-                          paddingVertical: 8,
-                          paddingHorizontal: 10,
-                          borderRadius: 14,
-                          borderWidth: 1,
-                          borderColor: isLate
-                            ? "rgba(229,22,54,0.22)"
-                            : CFA.border,
-                          backgroundColor: isLate
-                            ? "rgba(229,22,54,0.06)"
-                            : "rgba(11,18,32,0.02)",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          minWidth: 94,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: isLate ? CFA.red : CFA.muted,
-                            fontWeight: "900",
-                            fontSize: 12,
-                          }}
-                        >
-                          {t.status === "COMPLETED"
-                            ? isLate
-                              ? "Late"
-                              : "On time"
-                            : "In flow"}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                );
-              })
-          )}
-        </Card>
-
-        {/* Alerts */}
-        <Card style={{ marginTop: 14 }}>
-          <Text style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}>
-            Alerts
-          </Text>
-
-          {computed.alerts.map((a, idx) => {
-            const color =
-              a.level === "danger"
-                ? CFA.danger
-                : a.level === "warn"
-                ? CFA.warn
-                : CFA.success;
-            const icon =
-              a.level === "danger"
-                ? "alert-circle"
-                : a.level === "warn"
-                ? "warning"
-                : "checkmark-circle";
-
-            return (
-              <View
-                key={idx}
-                style={{
-                  padding: 12,
-                  borderRadius: 14,
-                  borderWidth: 1,
-                  borderColor: CFA.border,
-                  marginBottom: 10,
-                  backgroundColor: "rgba(11,18,32,0.02)",
-                  flexDirection: "row",
-                  alignItems: "flex-start",
-                  gap: 10,
-                }}
-              >
-                <Ionicons name={icon as any} size={18} color={color} />
-                <Text style={{ color, fontWeight: "900", flex: 1 }}>
-                  {a.text}
-                </Text>
-              </View>
-            );
-          })}
-        </Card>
-
-        {/* Shift notes */}
-        <Card style={{ marginTop: 14 }}>
-          <Text style={{ color: CFA.ink, fontWeight: "900", marginBottom: 6 }}>
-            Shift Notes
-          </Text>
-          <Text style={{ color: CFA.muted }}>
-            Quick notes for staffing, quality, and ops (UI-only for now).
-          </Text>
-
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 10,
-              marginTop: 12,
-              flexWrap: "wrap",
-            }}
-          >
-            {(["Ops", "Staffing", "Quality", "Supply"] as Note["tag"][]).map(
-              (t) => (
-                <Chip
-                  key={t}
-                  text={t}
-                  active={noteTag === t}
-                  onPress={() => setNoteTag(t)}
-                />
-              )
-            )}
-          </View>
-
-          <View
-            style={{
-              marginTop: 12,
-              borderWidth: 1,
-              borderColor: CFA.border,
-              borderRadius: 16,
-              backgroundColor: "rgba(11,18,32,0.02)",
-              padding: 12,
-            }}
-          >
-            <TextInput
-              value={noteText}
-              onChangeText={setNoteText}
-              placeholder="Add a note (e.g., “Need 1 more runner at 12:00”)"
-              placeholderTextColor="rgba(11,18,32,0.40)"
-              multiline
-              style={{ color: CFA.ink, fontWeight: "800", minHeight: 54 }}
-            />
-
+            {/* Header */}
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                alignItems: "center",
-                marginTop: 10,
+                alignItems: "flex-start",
+                gap: 12,
               }}
             >
-              <Text
-                style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
-              >
-                Tag: {noteTag}
-              </Text>
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}
+                >
+                  Operations
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 4 }}>
+                  Ticket flow, readiness, and shift-level insights
+                </Text>
+              </View>
 
               <Pressable
-                onPress={addNote}
+                onPress={clearMockTickets}
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 12,
                   borderRadius: 16,
-                  backgroundColor: CFA.red,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  backgroundColor: CFA.card,
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 8,
-                  opacity: noteText.trim() ? 1 : 0.6,
                 }}
-                disabled={!noteText.trim()}
               >
-                <Ionicons name="add-circle" size={16} color="#fff" />
+                <Ionicons name="refresh" size={16} color={CFA.muted} />
                 <Text
-                  style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}
+                  style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
                 >
-                  Add Note
+                  Reset
                 </Text>
               </Pressable>
             </View>
-          </View>
 
-          <View style={{ marginTop: 12 }}>
-            {notes.length === 0 ? (
-              <View style={{ paddingVertical: 14, alignItems: "center" }}>
-                <Ionicons
-                  name="document-text-outline"
-                  size={24}
-                  color={CFA.muted}
-                />
+            {/* Range */}
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 10,
+                marginTop: 14,
+                flexWrap: "wrap",
+                alignItems: "center",
+              }}
+            >
+              <Chip
+                text="Today"
+                active={range === "1d"}
+                onPress={() => setRange("1d")}
+              />
+              <Chip
+                text="7 Days"
+                active={range === "7d"}
+                onPress={() => setRange("7d")}
+              />
+              <Chip
+                text="30 Days"
+                active={range === "30d"}
+                onPress={() => setRange("30d")}
+              />
+              <Chip
+                text="YTD"
+                active={range === "ytd"}
+                onPress={() => setRange("ytd")}
+              />
+
+              <View style={{ marginLeft: "auto" }}>
                 <Text
-                  style={{ color: CFA.muted, marginTop: 8, fontWeight: "800" }}
+                  style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
                 >
-                  No notes yet.
+                  UI-only • Range: {range.toUpperCase()}
                 </Text>
               </View>
-            ) : (
-              notes
-                .slice()
-                .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-                .map((n, idx) => (
-                  <View
-                    key={n.id}
+            </View>
+
+            {/* KPI Row */}
+            <View style={{ flexDirection: "row", gap: 12, marginTop: 14 }}>
+              <Card style={{ flex: 1 }}>
+                <Text
+                  style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}
+                >
+                  Orders
+                </Text>
+                <Text
+                  style={{
+                    color: CFA.ink,
+                    fontSize: 24,
+                    fontWeight: "900",
+                    marginTop: 6,
+                  }}
+                >
+                  {computed.total}
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
+                  Active: {computed.active} • Done: {computed.completed}
+                </Text>
+              </Card>
+
+              <Card style={{ flex: 1 }}>
+                <Text
+                  style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}
+                >
+                  Avg Ticket Time
+                </Text>
+                <Text
+                  style={{
+                    color: CFA.ink,
+                    fontSize: 24,
+                    fontWeight: "900",
+                    marginTop: 6,
+                  }}
+                >
+                  {computed.avgMins.toFixed(1)} min
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
+                  Based on completed tickets
+                </Text>
+              </Card>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 12, marginTop: 12 }}>
+              <Card style={{ flex: 1 }}>
+                <Text
+                  style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}
+                >
+                  On-time %
+                </Text>
+                <Text
+                  style={{
+                    color: CFA.ink,
+                    fontSize: 24,
+                    fontWeight: "900",
+                    marginTop: 6,
+                  }}
+                >
+                  {computed.onTimePct.toFixed(0)}%
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
+                  Completed within promised mins
+                </Text>
+              </Card>
+
+              <Card style={{ flex: 1 }}>
+                <Text
+                  style={{ color: CFA.muted, fontSize: 12, fontWeight: "800" }}
+                >
+                  Cancelled %
+                </Text>
+                <Text
+                  style={{
+                    color: CFA.ink,
+                    fontSize: 24,
+                    fontWeight: "900",
+                    marginTop: 6,
+                  }}
+                >
+                  {computed.cancelledPct.toFixed(0)}%
+                </Text>
+                <Text style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}>
+                  Cancelled: {computed.cancelled}
+                </Text>
+              </Card>
+            </View>
+
+            {/* Distribution */}
+            <Card style={{ marginTop: 14 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                  Ticket Time Distribution
+                </Text>
+                <Text
+                  style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
+                >
+                  Total: {bucketTotal}
+                </Text>
+              </View>
+
+              <BarRow
+                label="0–10m"
+                value={computed.buckets["0–10m"]}
+                total={bucketTotal}
+                color={"rgba(77,123,74,0.60)"}
+              />
+              <BarRow
+                label="11–15m"
+                value={computed.buckets["11–15m"]}
+                total={bucketTotal}
+                color={"rgba(77,123,74,0.40)"}
+              />
+              <BarRow
+                label="16–20m"
+                value={computed.buckets["16–20m"]}
+                total={bucketTotal}
+                color={"rgba(255,193,7,0.45)"}
+              />
+              <BarRow
+                label="21–30m"
+                value={computed.buckets["21–30m"]}
+                total={bucketTotal}
+                color={"rgba(255,193,7,0.35)"}
+              />
+              <BarRow
+                label="30m+"
+                value={computed.buckets["30m+"]}
+                total={bucketTotal}
+                color={"rgba(229,22,54,0.40)"}
+              />
+
+              <Text style={{ color: CFA.muted, marginTop: 10, fontSize: 12 }}>
+                Tip: we’ll swap this for real ticket histograms once the API is
+                wired.
+              </Text>
+            </Card>
+
+            {/* Recent tickets */}
+            <Card style={{ marginTop: 14 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                  Recent Tickets
+                </Text>
+                <Text
+                  style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}
+                >
+                  Revenue: {money(computed.revenue)}
+                </Text>
+              </View>
+
+              {tickets.length === 0 ? (
+                <View style={{ paddingVertical: 22, alignItems: "center" }}>
+                  <Ionicons name="timer-outline" size={26} color={CFA.muted} />
+                  <Text
                     style={{
-                      paddingVertical: 12,
-                      borderTopWidth: idx === 0 ? 0 : 1,
-                      borderTopColor: CFA.border,
+                      color: CFA.muted,
+                      marginTop: 8,
+                      fontWeight: "800",
+                    }}
+                  >
+                    No tickets yet (UI-only).
+                  </Text>
+                </View>
+              ) : (
+                tickets
+                  .slice()
+                  .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+                  .map((t, idx) => {
+                    const pill = statusPill(t.status);
+                    const isLate =
+                      t.status === "COMPLETED" &&
+                      (t.durationMins || 0) > t.promisedMins;
+
+                    return (
+                      <View
+                        key={t.id}
+                        style={{
+                          paddingVertical: 12,
+                          borderTopWidth: idx === 0 ? 0 : 1,
+                          borderTopColor: CFA.border,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 12,
+                          }}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Text style={{ color: CFA.ink, fontWeight: "900" }}>
+                              {t.customer}
+                            </Text>
+                            <Text
+                              style={{
+                                color: CFA.muted,
+                                marginTop: 3,
+                                fontSize: 12,
+                              }}
+                            >
+                              {formatTime(t.createdAt)} • {t.itemsCount} items •{" "}
+                              {money(t.revenue)}
+                            </Text>
+                          </View>
+
+                          <View
+                            style={{
+                              paddingVertical: 6,
+                              paddingHorizontal: 10,
+                              borderRadius: 999,
+                              backgroundColor: pill.bg,
+                              borderWidth: 1,
+                              borderColor: "rgba(0,0,0,0.06)",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: 8,
+                            }}
+                          >
+                            <Ionicons
+                              name={
+                                t.status === "READY"
+                                  ? "checkmark-circle"
+                                  : t.status === "IN_PROGRESS"
+                                  ? "flame"
+                                  : t.status === "COMPLETED"
+                                  ? "checkmark-done"
+                                  : t.status === "CANCELLED"
+                                  ? "close-circle"
+                                  : "ellipse"
+                              }
+                              size={14}
+                              color={pill.fg}
+                            />
+                            <Text
+                              style={{
+                                color: pill.fg,
+                                fontWeight: "900",
+                                fontSize: 12,
+                              }}
+                            >
+                              {pill.label}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            gap: 10,
+                            marginTop: 10,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flex: 1,
+                              paddingVertical: 8,
+                              paddingHorizontal: 10,
+                              borderRadius: 14,
+                              borderWidth: 1,
+                              borderColor: CFA.border,
+                              backgroundColor: "rgba(11,18,32,0.02)",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: CFA.muted,
+                                fontWeight: "900",
+                                fontSize: 11,
+                              }}
+                            >
+                              Promised
+                            </Text>
+                            <Text
+                              style={{
+                                color: CFA.ink,
+                                fontWeight: "900",
+                                marginTop: 4,
+                              }}
+                            >
+                              {t.promisedMins} min
+                            </Text>
+                          </View>
+
+                          <View
+                            style={{
+                              flex: 1,
+                              paddingVertical: 8,
+                              paddingHorizontal: 10,
+                              borderRadius: 14,
+                              borderWidth: 1,
+                              borderColor: CFA.border,
+                              backgroundColor: "rgba(11,18,32,0.02)",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: CFA.muted,
+                                fontWeight: "900",
+                                fontSize: 11,
+                              }}
+                            >
+                              Ticket Time
+                            </Text>
+                            <Text
+                              style={{
+                                color: isLate ? CFA.danger : CFA.ink,
+                                fontWeight: "900",
+                                marginTop: 4,
+                              }}
+                            >
+                              {t.status === "COMPLETED"
+                                ? `${t.durationMins} min`
+                                : "—"}
+                            </Text>
+                          </View>
+
+                          <View
+                            style={{
+                              paddingVertical: 8,
+                              paddingHorizontal: 10,
+                              borderRadius: 14,
+                              borderWidth: 1,
+                              borderColor: isLate
+                                ? "rgba(229,22,54,0.22)"
+                                : CFA.border,
+                              backgroundColor: isLate
+                                ? "rgba(229,22,54,0.06)"
+                                : "rgba(11,18,32,0.02)",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              minWidth: 94,
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: isLate ? CFA.red : CFA.muted,
+                                fontWeight: "900",
+                                fontSize: 12,
+                              }}
+                            >
+                              {t.status === "COMPLETED"
+                                ? isLate
+                                  ? "Late"
+                                  : "On time"
+                                : "In flow"}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    );
+                  })
+              )}
+            </Card>
+
+            {/* Alerts */}
+            <Card style={{ marginTop: 14 }}>
+              <Text
+                style={{ color: CFA.ink, fontWeight: "900", marginBottom: 10 }}
+              >
+                Alerts
+              </Text>
+
+              {computed.alerts.map((a, idx) => {
+                const color =
+                  a.level === "danger"
+                    ? CFA.danger
+                    : a.level === "warn"
+                    ? CFA.warn
+                    : CFA.success;
+                const icon =
+                  a.level === "danger"
+                    ? "alert-circle"
+                    : a.level === "warn"
+                    ? "warning"
+                    : "checkmark-circle";
+
+                return (
+                  <View
+                    key={idx}
+                    style={{
+                      padding: 12,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: CFA.border,
+                      marginBottom: 10,
+                      backgroundColor: "rgba(11,18,32,0.02)",
                       flexDirection: "row",
                       alignItems: "flex-start",
                       gap: 10,
                     }}
                   >
-                    <View
+                    <Ionicons name={icon as any} size={18} color={color} />
+                    <Text style={{ color, fontWeight: "900", flex: 1 }}>
+                      {a.text}
+                    </Text>
+                  </View>
+                );
+              })}
+            </Card>
+
+            {/* Shift notes */}
+            <Card style={{ marginTop: 14 }}>
+              <Text
+                style={{ color: CFA.ink, fontWeight: "900", marginBottom: 6 }}
+              >
+                Shift Notes
+              </Text>
+              <Text style={{ color: CFA.muted }}>
+                Quick notes for staffing, quality, and ops (UI-only for now).
+              </Text>
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 10,
+                  marginTop: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                {(
+                  ["Ops", "Staffing", "Quality", "Supply"] as Note["tag"][]
+                ).map((t) => (
+                  <Chip
+                    key={t}
+                    text={t}
+                    active={noteTag === t}
+                    onPress={() => setNoteTag(t)}
+                  />
+                ))}
+              </View>
+
+              <View
+                style={{
+                  marginTop: 12,
+                  borderWidth: 1,
+                  borderColor: CFA.border,
+                  borderRadius: 16,
+                  backgroundColor: "rgba(11,18,32,0.02)",
+                  padding: 12,
+                }}
+              >
+                <TextInput
+                  value={noteText}
+                  onChangeText={setNoteText}
+                  placeholder="Add a note (e.g., “Need 1 more runner at 12:00”)"
+                  placeholderTextColor="rgba(11,18,32,0.40)"
+                  multiline
+                  style={{ color: CFA.ink, fontWeight: "800", minHeight: 54 }}
+                />
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: CFA.muted,
+                      fontWeight: "900",
+                      fontSize: 12,
+                    }}
+                  >
+                    Tag: {noteTag}
+                  </Text>
+
+                  <Pressable
+                    onPress={addNote}
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 12,
+                      borderRadius: 16,
+                      backgroundColor: CFA.red,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      opacity: noteText.trim() ? 1 : 0.6,
+                    }}
+                    disabled={!noteText.trim()}
+                  >
+                    <Ionicons name="add-circle" size={16} color="#fff" />
+                    <Text
+                      style={{ color: "#fff", fontWeight: "900", fontSize: 12 }}
+                    >
+                      Add Note
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              <View style={{ marginTop: 12 }}>
+                {notes.length === 0 ? (
+                  <View style={{ paddingVertical: 14, alignItems: "center" }}>
+                    <Ionicons
+                      name="document-text-outline"
+                      size={24}
+                      color={CFA.muted}
+                    />
+                    <Text
                       style={{
-                        paddingVertical: 6,
-                        paddingHorizontal: 10,
-                        borderRadius: 999,
-                        borderWidth: 1,
-                        borderColor: CFA.border,
-                        backgroundColor: "rgba(11,18,32,0.02)",
+                        color: CFA.muted,
+                        marginTop: 8,
+                        fontWeight: "800",
                       }}
                     >
-                      <Text
+                      No notes yet.
+                    </Text>
+                  </View>
+                ) : (
+                  notes
+                    .slice()
+                    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+                    .map((n, idx) => (
+                      <View
+                        key={n.id}
                         style={{
-                          color: CFA.muted,
-                          fontWeight: "900",
-                          fontSize: 12,
+                          paddingVertical: 12,
+                          borderTopWidth: idx === 0 ? 0 : 1,
+                          borderTopColor: CFA.border,
+                          flexDirection: "row",
+                          alignItems: "flex-start",
+                          gap: 10,
                         }}
                       >
-                        {n.tag}
-                      </Text>
-                    </View>
+                        <View
+                          style={{
+                            paddingVertical: 6,
+                            paddingHorizontal: 10,
+                            borderRadius: 999,
+                            borderWidth: 1,
+                            borderColor: CFA.border,
+                            backgroundColor: "rgba(11,18,32,0.02)",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              fontWeight: "900",
+                              fontSize: 12,
+                            }}
+                          >
+                            {n.tag}
+                          </Text>
+                        </View>
 
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ color: CFA.ink, fontWeight: "800" }}>
-                        {n.text}
-                      </Text>
-                      <Text
-                        style={{ color: CFA.muted, marginTop: 6, fontSize: 12 }}
-                      >
-                        {new Date(n.createdAt).toLocaleString()}
-                      </Text>
-                    </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={{ color: CFA.ink, fontWeight: "800" }}>
+                            {n.text}
+                          </Text>
+                          <Text
+                            style={{
+                              color: CFA.muted,
+                              marginTop: 6,
+                              fontSize: 12,
+                            }}
+                          >
+                            {new Date(n.createdAt).toLocaleString()}
+                          </Text>
+                        </View>
 
-                    <Pressable
-                      onPress={() => removeNote(n.id)}
-                      hitSlop={12}
-                      style={{
-                        paddingVertical: 8,
-                        paddingHorizontal: 10,
-                        borderRadius: 14,
-                        borderWidth: 1,
-                        borderColor: "rgba(229,22,54,0.22)",
-                        backgroundColor: "rgba(229,22,54,0.06)",
-                      }}
-                    >
-                      <Ionicons name="trash" size={18} color={CFA.red} />
-                    </Pressable>
-                  </View>
-                ))
-            )}
-          </View>
-        </Card>
+                        <Pressable
+                          onPress={() => removeNote(n.id)}
+                          hitSlop={12}
+                          style={{
+                            paddingVertical: 8,
+                            paddingHorizontal: 10,
+                            borderRadius: 14,
+                            borderWidth: 1,
+                            borderColor: "rgba(229,22,54,0.22)",
+                            backgroundColor: "rgba(229,22,54,0.06)",
+                          }}
+                        >
+                          <Ionicons name="trash" size={18} color={CFA.red} />
+                        </Pressable>
+                      </View>
+                    ))
+                )}
+              </View>
+            </Card>
 
-        <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
-          UI-only: operations data is mocked. Next we’ll wire real order/ticket
-          endpoints from catering-api.
-        </Text>
-      </ScrollView>
-    </SafeAreaView>
-  );
+            <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
+              UI-only: operations data is mocked. Next we’ll wire real
+              order/ticket endpoints from catering-api.
+            </Text>
+          </ScrollView>
+        </SafeAreaView>
+      </TabScreenTransition>
+    );
 }

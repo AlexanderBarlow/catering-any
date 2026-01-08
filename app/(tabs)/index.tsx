@@ -17,6 +17,8 @@ import { router } from "expo-router";
 import { CFA } from "../../constants/theme";
 import { api, type OverviewRange } from "../../src/api";
 import { useSession } from "../../hooks/useSession";
+import TabScreenTransition from "../../components/TabScreenTransition";
+
 
 function money(n: number) {
   return `$${Number(n || 0).toLocaleString()}`;
@@ -353,52 +355,54 @@ export default function Dashboard() {
   );
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: CFA.cream }}
-      edges={["top", "left", "right"]}
-    >
-      <ScrollView
-        contentContainerStyle={{
-          paddingTop: 12,
-          paddingBottom: bottomPadForNav,
-          paddingLeft: sidePad,
-          paddingRight: sidePad,
-        }}
-        showsVerticalScrollIndicator={false}
+    <TabScreenTransition>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: CFA.cream }}
+        edges={["top", "left", "right"]}
       >
-        {Header}
+        <ScrollView
+          contentContainerStyle={{
+            paddingTop: 12,
+            paddingBottom: bottomPadForNav,
+            paddingLeft: sidePad,
+            paddingRight: sidePad,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {Header}
 
-        {!isWide ? (
-          <>
-            {KPIBlock}
-            {RevenueChart}
-            {TopItems}
-            {Alerts}
-
-            <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
-              Note: data is mock right now. We’ll swap to catering-api endpoints
-              later.
-            </Text>
-          </>
-        ) : (
-          <View style={{ flexDirection: "row", gap: 14, marginTop: 2 }}>
-            <View style={{ flex: 1 }}>
+          {!isWide ? (
+            <>
               {KPIBlock}
-              {TopItems}
-            </View>
-
-            <View style={{ flex: 1 }}>
               {RevenueChart}
+              {TopItems}
               {Alerts}
 
               <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
                 Note: data is mock right now. We’ll swap to catering-api
                 endpoints later.
               </Text>
+            </>
+          ) : (
+            <View style={{ flexDirection: "row", gap: 14, marginTop: 2 }}>
+              <View style={{ flex: 1 }}>
+                {KPIBlock}
+                {TopItems}
+              </View>
+
+              <View style={{ flex: 1 }}>
+                {RevenueChart}
+                {Alerts}
+
+                <Text style={{ color: CFA.muted, marginTop: 12, fontSize: 12 }}>
+                  Note: data is mock right now. We’ll swap to catering-api
+                  endpoints later.
+                </Text>
+              </View>
             </View>
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </TabScreenTransition>
   );
 }
