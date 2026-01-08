@@ -1,24 +1,42 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React, { useEffect, useMemo } from "react";
+import { Slot, useRouter, useSegments } from "expo-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { SessionProvider, useSession } from "../hooks/useSession";
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+function RootGuard() {
+  const router = useRouter();
+  const segments = useSegments();
+  const { loading, isAuthed } = useSession();
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuth = segments[0] === "(auth)";
+
+    if (!isAuthed && !inAuth) router.replace("/(auth)/login");
+    if (isAuthed && inAuth) router.replace("/(tabs)");
+  }, [loading, isAuthed, segments, router]);
+
+  return <Slot />;
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const queryClient = useMemo(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: false },
+        },
+      }),
+    []
+  );
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <SessionProvider>
+        <RootGuard />
+      </SessionProvider>
+    </QueryClientProvider>
   );
 }

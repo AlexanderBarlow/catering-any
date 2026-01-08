@@ -27,6 +27,18 @@ export const Colors = {
   },
 };
 
+export const CFA = {
+  red: "#E51636",
+  cream: "#FFF6F2",
+  ink: "#0B1220",
+  muted: "rgba(11,18,32,0.62)",
+  card: "#FFFFFF",
+  border: "rgba(11,18,32,0.10)",
+  success: "#16A34A",
+  warn: "#F59E0B",
+  danger: "#DC2626",
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
