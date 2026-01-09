@@ -42,7 +42,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -52,7 +53,8 @@
       "router": {},
       "eas": {
         "projectId": "7518773e-6e95-4180-a3f0-14cba04e6010"
-      }
+      },
+      "EXPO_PUBLIC_API_BASE": "https://catering-api-4icb.onrender.com"
     },
     "runtimeVersion": {
       "policy": "appVersion"
