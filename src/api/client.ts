@@ -1,16 +1,35 @@
 import Constants from "expo-constants";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_BASE =
   process.env.EXPO_PUBLIC_API_BASE ||
   Constants.expoConfig?.extra?.EXPO_PUBLIC_API_BASE;
 
-export async function getToken() {
-  return SecureStore.getItemAsync("access_token");
+if (!API_BASE) {
+  console.warn(
+    "Missing EXPO_PUBLIC_API_BASE. Set it in .env or app config extra."
+  );
 }
 
-async function request(path, { method = "GET", body, headers } = {}) {
-  const token = await getToken();
+// Use the SAME key as session.ts so everything stays consistent
+const TOKEN_KEY = "analytics_token";
+
+export async function getToken() {
+  return AsyncStorage.getItem(TOKEN_KEY);
+}
+
+type RequestOpts = {
+  method?: string;
+  body?: any;
+  headers?: Record<string, string>;
+  tokenOverride?: string | null;
+};
+
+async function request(path: string, opts: RequestOpts = {}) {
+  const { method = "GET", body, headers, tokenOverride } = opts;
+
+  const storedToken = await getToken();
+  const token = tokenOverride ?? storedToken;
 
   const res = await fetch(`${API_BASE}${path}`, {
     method,
@@ -23,7 +42,8 @@ async function request(path, { method = "GET", body, headers } = {}) {
   });
 
   const text = await res.text();
-  let data;
+  let data: any;
+
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
@@ -40,9 +60,22 @@ async function request(path, { method = "GET", body, headers } = {}) {
   return data;
 }
 
-export const api = {
-  get: (path) => request(path),
-  post: (path, body) => request(path, { method: "POST", body }),
-  put: (path, body) => request(path, { method: "PUT", body }),
-  del: (path) => request(path, { method: "DELETE" }),
+export const http = {
+  get: (path: string, opts?: Omit<RequestOpts, "method" | "body">) =>
+    request(path, { ...opts, method: "GET" }),
+
+  post: (
+    path: string,
+    body?: any,
+    opts?: Omit<RequestOpts, "method" | "body">
+  ) => request(path, { ...opts, method: "POST", body }),
+
+  put: (
+    path: string,
+    body?: any,
+    opts?: Omit<RequestOpts, "method" | "body">
+  ) => request(path, { ...opts, method: "PUT", body }),
+
+  del: (path: string, opts?: Omit<RequestOpts, "method" | "body">) =>
+    request(path, { ...opts, method: "DELETE" }),
 };

@@ -19,7 +19,6 @@ import { api, type OverviewRange } from "../../src/api";
 import { useSession } from "../../hooks/useSession";
 import TabScreenTransition from "../../components/TabScreenTransition";
 
-
 function money(n: number) {
   return `$${Number(n || 0).toLocaleString()}`;
 }
@@ -110,6 +109,40 @@ function Chip({
   );
 }
 
+function IconButton({
+  icon,
+  label,
+  onPress,
+}: {
+  icon: any;
+  label: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      hitSlop={10}
+      style={{
+        paddingVertical: 10,
+        paddingHorizontal: 12,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: CFA.border,
+        backgroundColor: CFA.card,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+      }}
+    >
+      <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
+        {label}
+      </Text>
+      {/* keep icon last so it feels like an action */}
+      {/* (Ionicons optional if you want it here; you can add later) */}
+    </Pressable>
+  );
+}
+
 export default function Dashboard() {
   const { user, signOut } = useSession();
   const [range, setRange] = useState<OverviewRange>("7d");
@@ -118,8 +151,6 @@ export default function Dashboard() {
   const { width, height } = useWindowDimensions();
 
   const isLandscape = width > height;
-
-  // iPad landscape “wide mode” only (iPhones stay single column)
   const isWide = isLandscape && width >= 900;
 
   const { data, isLoading, refetch, isFetching } = useQuery({
@@ -132,31 +163,34 @@ export default function Dashboard() {
     return s.map((p) => ({ value: p.value, label: p.label }));
   }, [data]);
 
-  // Notch/rounded-corner safe horizontal padding (landscape especially)
   const sidePad = 16 + Math.max(insets.left, insets.right);
-
-  // Keep content clear of floating tab bar + home indicator
   const bottomPadForNav = insets.bottom + (isWide ? 110 : 98);
 
   const handleSignOut = async () => {
     try {
       await signOut();
     } finally {
-      // Ensure we leave tabs immediately after clearing session
       router.replace("/(auth)/login");
     }
   };
 
+  const goProfile = () => {
+    // placeholder route you can build later
+    router.push("/modals/profile");
+  };
+
   const Header = (
     <>
+      {/* Top row: title + profile */}
       <View
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: 12,
         }}
       >
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 22, fontWeight: "900", color: CFA.ink }}>
             Dashboard
           </Text>
@@ -165,23 +199,29 @@ export default function Dashboard() {
           </Text>
         </View>
 
+        {/* Profile button */}
         <Pressable
-          onPress={handleSignOut}
+          onPress={goProfile}
+          hitSlop={10}
           style={{
-            paddingVertical: 8,
+            paddingVertical: 10,
             paddingHorizontal: 12,
             borderRadius: 999,
             borderWidth: 1,
             borderColor: CFA.border,
             backgroundColor: CFA.card,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
           }}
         >
           <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-            Sign out
+            Profile
           </Text>
         </Pressable>
       </View>
 
+      {/* Range chips + actions row */}
       <View
         style={{
           flexDirection: "row",
@@ -212,22 +252,41 @@ export default function Dashboard() {
           onPress={() => setRange("ytd")}
         />
 
-        <Pressable
-          onPress={() => refetch()}
-          style={{
-            marginLeft: "auto",
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 999,
-            borderWidth: 1,
-            borderColor: CFA.border,
-            backgroundColor: CFA.card,
-          }}
-        >
-          <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
-            {isFetching ? "Refreshing…" : "Refresh"}
-          </Text>
-        </Pressable>
+        {/* right-side actions */}
+        <View style={{ marginLeft: "auto", flexDirection: "row", gap: 10 }}>
+          <Pressable
+            onPress={() => refetch()}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: CFA.border,
+              backgroundColor: CFA.card,
+            }}
+          >
+            <Text style={{ color: CFA.muted, fontWeight: "900", fontSize: 12 }}>
+              {isFetching ? "Refreshing…" : "Refresh"}
+            </Text>
+          </Pressable>
+
+          {/* moved sign out UP here (not near bottom) */}
+          <Pressable
+            onPress={handleSignOut}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 12,
+              borderRadius: 999,
+              borderWidth: 1,
+              borderColor: "rgba(229,22,54,0.20)",
+              backgroundColor: "rgba(229,22,54,0.06)",
+            }}
+          >
+            <Text style={{ color: CFA.red, fontWeight: "900", fontSize: 12 }}>
+              Sign out
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </>
   );
@@ -363,7 +422,7 @@ export default function Dashboard() {
         <ScrollView
           contentContainerStyle={{
             paddingTop: 12,
-            paddingBottom: bottomPadForNav,
+            paddingBottom: bottomPadForNav, // ✅ safe for floating tab bar
             paddingLeft: sidePad,
             paddingRight: sidePad,
           }}

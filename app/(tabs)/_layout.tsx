@@ -268,7 +268,11 @@ function IOS26TabBar(props: BottomTabBarProps & { isAdmin: boolean }) {
 }
 
 export default function TabsLayout() {
-  const { isAdmin } = useSession();
+  const sessionHook = useSession() as any;
+  const user = sessionHook?.user ?? sessionHook?.session?.user ?? null;
+  const role = String(user?.role || "").toUpperCase();
+
+  const isAdmin = role === "ADMIN";
 
   return (
     <Tabs
@@ -285,3 +289,4 @@ export default function TabsLayout() {
     </Tabs>
   );
 }
+
